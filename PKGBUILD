@@ -27,6 +27,9 @@ license=('GPL-3.0-only')
 # on the daemon would invert the relationship - the theme says what to show, it does not
 # own what shows it.
 depends=('noto-fonts' 'wmde-icons-base')
+# The boot splash theme is dead files without Plymouth, but the distribution decides whether
+# to boot with a splash, not the theme.
+optdepends=('plymouth: the WMDE boot splash')
 makedepends=('just' 'git')
 source=("$pkgname::git+https://github.com/Lin-WMDE/wmde-themes.git#branch=wmde")
 sha256sums=('SKIP')

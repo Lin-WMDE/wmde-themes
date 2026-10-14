@@ -29,6 +29,25 @@
 Обои названы путём, а сам файл ставит `wmde-bg`. Тема указывает, что показывать, а не несёт
 изображение.
 
+## Заставка загрузки
+
+Тема Plymouth `wmde` (`plymouth/wmde/`, ставится в `/usr/share/plymouth/themes/wmde/`), модуль
+`two-step`, как у темы `bgrt` из Plymouth. Как при загрузке Windows: на чёрном фоне логотип
+производителя из прошивки (ACPI BGRT), под ним спиннер из пяти точек. Где в прошивке логотипа
+нет (VM, старые платы), `two-step` показывает `bgrt-fallback.png` - логотип WMDE. Включает
+заставку дистрибутив: пакет `plymouth`, хук `plymouth` в initramfs, `splash` в параметрах ядра,
+`Theme=wmde` в `/etc/plymouth/plymouthd.conf`; пакет темы держит `plymouth` только в
+`optdepends`.
+
+| Файл | Откуда |
+|---|---|
+| `wmde.plymouth` | раскладка `bgrt.plymouth`, шрифт Noto Sans, подписи по-украински |
+| `throbber-0001..0060.png` | спиннер, рисует `plymouth/render.py` |
+| `bgrt-fallback.png` | `rsvg-convert -w 160 -h 160` из `wmde-settings/resources/wmde-logo.svg` |
+| `entry`, `bullet`, `lock`, `capslock`, `keyboard`, `keymap-render` | из темы `spinner` Plymouth 26.134, GPL-2.0-or-later: поле пароля LUKS и индикаторы раскладки |
+
+Картинки закоммичены, сборка их не рисует. Перерисовать спиннер - `python3 plymouth/render.py`.
+
 ## Правка
 
 Часть данных **генерируется и руками не правится**: палитры, режим и обои перезаписываются
