@@ -1,0 +1,57 @@
+# Один конфиг nFPM на оба формата. Стейджинг готовит `just package-staging`,
+# версию всегда подставляет just через env WMDE_VERSION (см. justfile).
+# ВАЖНО: только ${WMDE_VERSION} без :-дефолта — nFPM раскрывает env через
+# os.ExpandEnv и :- не понимает (версия молча станет 0.0.0~rc0).
+#
+# Пакет data-only: сборки нет, только раскладка default_schema.
+name: wmde-themes
+arch: all
+version: ${WMDE_VERSION}
+release: 1
+maintainer: WMDE <wmde@wmde.fun>
+description: |-
+  WMDE theme defaults (palettes, fonts, panel, dock, wallpaper)
+  System defaults for a clean install and new users.
+homepage: https://wmde.fun
+license: GPL-3.0-only
+section: x11
+
+# Шрифты — жёстко (тема их называет, без них fontconfig подставит что попало).
+# wmde-icons-base — в recommends: его пока нет в репозиториях дистрибутивов,
+# apt/dnf ставят Recommends по умолчанию. Когда выйдет единый репозиторий
+# WMDE — переключить в depends (в PKGBUILD это hard dep).
+depends:
+  - fonts-noto
+
+recommends:
+  - wmde-icons-base
+
+contents:
+  - src: target/staging/usr/share/wmde/
+    dst: /usr/share/wmde/
+    type: tree
+  # doc (copyright + changelog.Debian.gz) готовит just package-doc.
+  # Только для deb: в rpm нет %doc-разметки у nFPM,
+  # а лицензия и changelog там и так есть (License-тег + %changelog).
+  - src: target/staging/usr/share/doc/wmde-themes/
+    dst: /usr/share/doc/wmde-themes/
+    type: tree
+    packager: deb
+
+# %changelog для rpm генерит just package-staging (иначе E: no-changelogname-tag).
+# Путь от корня репо: nFPM резолвит его от cwd, а не от каталога конфига.
+changelog: target/changelog.yaml
+
+overrides:
+  deb:
+    depends:
+      - fonts-noto
+      - fonts-noto-mono
+    recommends:
+      - wmde-icons-base
+  rpm:
+    depends:
+      - font(notosans)
+      - font(notosansmono)
+    recommends:
+      - wmde-icons-base
